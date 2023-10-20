@@ -15,7 +15,7 @@ Mappen her er stortset tom, fordi I selv skal udfylde den med jeres dokumentaion
 Jeres Database diagram som i har lavet med [DrawSQL.app](drawsql.app)
 
 ## [SQL-Scripts](https://github.com/MAGS-Template/H1-Projekt/tree/master/SQL-Scripts)
-Vi skal skrive scripts som kan queries mod vores database som enten er hostet lokalt eller på en cloudplatform! Det er vigtigt at gemme dem, så vi bruger mappen her og gemmer dem som .SQL filer. De kan eksekveres med mange GUI's - personligt anbefaler jeg [SQLTools](https://www.notion.so/mercantec/VSCode-Extensions-f4e03a6568ee483f85d9fc018ba6baa7?pvs=4#e439f568d1fe4749afa04ee204f37ac9) som er en udvidelse til VSCode
+Vi skal skrive scripts som kan queries mod vores database som enten er hostet lokalt eller på en cloudplatform! Det er vigtigt at gemme dem, så vi bruger mappen her og gemmer dem som .SQL filer. De kan eksekveres med mange GUI's - personligt anbefaler jeg [SQLTools](https://www.notion.so/mercantec/VSCode-Extensions-f4e03a6568ee483f85d9fc018ba6baa7?pvs=4#e439f568d1fe4749afa04ee204f37ac9) som er en udvidelse til VSCode. [TablePlus](https://tableplus.com/) og [HeidiSQL](https://www.heidisql.com/) er også gode bud!
 
 ### Hosting
 Vi kigger på Hosting under H1 forløbet, men vores applikation her burde gerne være live på [Render.com](https://h1-template.onrender.com/)! *Siden bliver inaktiv efter lidt tid, så hvis den ikke loader, er [kontaineren](https://www.notion.so/mercantec/Containers-a9c3613888d342cca0221c7e0f68a767) ved at starte op!*
