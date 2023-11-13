@@ -1,2 +1,8 @@
---@block Her kan i skrive SQL scripts til at oprette jeres DB
-SELECT * FROM sql
+SELECT
+    *
+FROM
+    Students
+SELECT
+    NAME
+FROM
+    Students
