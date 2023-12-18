@@ -5,7 +5,7 @@ Projektet han findes her - [Notion](https://www.notion.so/mercantec/Projekt-H1-W
 Det er delt op i 4 mapper 
 
 ## [BlazorApp](https://github.com/MAGS-Template/H1-Projekt/tree/master/BlazorApp)
-Her er størstedelen af jeres projekt, her har vi alt UI. 
+Her er størstedelen af jeres projekt, her har vi alt UI. Det er også vores Blazor Server som skal håndtere vores forbindelse til databasen!
 
 ## [Domain Models](https://github.com/MAGS-Template/H1-Projekt/tree/master/Domain%20Models)
 Her er alle jeres klasser, som skal bruges inde i jeres BlazorApp. 
