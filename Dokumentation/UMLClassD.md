@@ -1,18 +1,35 @@
-````mermaid
+```mermaid
 classDiagram
   direction RL
-  class Student {
-    -idCard : IdCard
+  class Person {
+    +name : string
+    +phoneNumber : string
+    +emailAddress : string
   }
-  class IdCard{
-    -id : int
-    -name : string
+  class Student{
+    +studentNumber : int
+    +averageMark : int
+    +iseligibleToEnroll(string) bool
+    +getSiminarsTaken() int
   }
-  class Bike{
-    -id : int
-    -name : string
+  class Professor{
+    /salery : int
+    #staffNumber : int
+    -yearsOfService : int
+    +numberOfClasses : int
   }
-  Student "1" --o "1" IdCard : carries
-  Student "1" --o "1" Bike : rides
-```mermaid
-````
+  class Address{
+    +street : string
+    +city : string
+    +state : string
+    +postalCode : int
+    +country : string
+    -validate() bool
+    +outputAsLabel() string
+  }
+  Person "0..1" --> "1" Address : lives at
+  Professor --|> Person
+  Student --|> Person
+  Professor "1..5" --> "0..1" Student : supervises
+
+```
