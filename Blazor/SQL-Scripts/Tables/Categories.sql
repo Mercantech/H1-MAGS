@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS Categories (
+    id VARCHAR(255) PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    CreatedDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    ModifiedDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_categories_name ON Categories(Name);
+
+COMMENT ON TABLE Categories IS 'Tabel der indeholder kategorier for biler';

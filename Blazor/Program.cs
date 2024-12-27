@@ -23,10 +23,17 @@ public class Program
         } else {
             Console.WriteLine("Forbindelse til database oprettet succesfuldt");
         }
+        bool newDatabase = true;
+        if (newDatabase)
+        {
+            // Opsæt tabellerne
+            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/User.sql");
+            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/Categories.sql");
+            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/Vehicles.sql");
 
-
-        // Opsæt tabellerne
-        dbService.ExecuteSqlFileAsync("SQL-Scripts/User.sql");
+            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/EVDetails.sql");
+            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/PetrolDetails.sql");
+        }
 
         builder.Services.AddBlazorBootstrap();
 

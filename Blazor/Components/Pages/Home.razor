@@ -1,28 +1,65 @@
 ﻿@page "/"
+@using Blazor.Services
+@using Domain_Models
+@inject DBService DbService
+@inject IJSRuntime JS
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Biler til salg</PageTitle>
 
-<h1>Velkommen til H1 ved MAGS</h1>
-
-<div class="database-container">
-    <h2>Database Status</h2>
-    @if (DBService != null)
-    { 
-        @if (DBService.GetAllTables().Count > 0){
-            @foreach (var table in DBService.GetAllTables())
-            {
-                <p>@table</p>
-            }
-        } else {
-            <p> Der er ingen tabeller i databasen</p>
-        }
+<div class="container mt-4">
+    <h1>Benzinbiler til salg</h1>
+    
+    @if (petrolCars == null)
+    {
+        <p>Indlæser biler...</p>
+    }
+    else if (!petrolCars.Any())
+    {
+        <p>Ingen benzinbiler fundet.</p>
     }
     else
     {
-        <p class="error-message">Der er ikke oprettet en forbindelse til databasen</p>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var car in petrolCars)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(car.ImageUrl))
+                        {
+                            <img src="@car.ImageUrl" class="card-img-top" alt="@car.Name">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@car.Brand @car.Name</h5>
+                            <p class="card-text">
+                                <strong>Pris:</strong> @car.Price.ToString("N0") kr.<br />
+                                <strong>Årgang:</strong> @car.Year<br />
+                                <strong>Kilometer:</strong> @car.Mileage.ToString() km
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">Sælger: @car.Seller.FirstName @car.Seller.LastName</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     }
 </div>
 
 @code {
+    private List<PetrolCar>? petrolCars;
 
-}   
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            petrolCars = await DbService.GetAllPetrolCarsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fejl ved indlæsning af biler: {ex.Message}");
+            throw;
+        }
+    }
+}
+

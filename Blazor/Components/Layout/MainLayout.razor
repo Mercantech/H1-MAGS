@@ -3,17 +3,14 @@
 <div class="bb-page">
 
     <Sidebar @ref="sidebar"
-             IconName="IconName.HouseDoorFill"
-             Title="H1 - Markedsplads"
-             DataProvider="SidebarDataProvider" />
+             ImageSrc="https://pub-3994a1873a2b4964acd0e1bd1eed75aa.r2.dev/BB-logo.png"
+             Title="BilBørsen"
+             BadgeText="BETA"
+             DataProvider="SidebarDataProvider"
+              />
 
     <main>
-        <div class="bb-top-row px-4 d-flex justify-content-start">
-            <ThemeSwitcher />
-            <a href="https://mercantec.notion.site/h1" target="_blank" class="ms-3">
-                <img src="https://pub-3994a1873a2b4964acd0e1bd1eed75aa.r2.dev/notion.png" alt="Notion Logo" class="logo">
-            </a>
-        </div>
+       
 
         <article class="content px-4">
             <div class="py-2">@Body</div>
@@ -41,7 +38,8 @@
                        new NavItem { Href = "/", IconName = IconName.HouseDoorFill, Text = "Home" },
                        new NavItem { Href = "/users", IconName = IconName.PeopleFill, Text = "Users" },
                        new NavItem { Href = "/counter", IconName = IconName.Calculator, Text = "Counter" },
-                       new NavItem { Href = "/weather", IconName = IconName.CloudSunFill, Text = "Weather" }
+                       new NavItem { Href = "/weather", IconName = IconName.CloudSunFill, Text = "Weather" },
+                       new NavItem { Href = "/database", IconName = IconName.Database, Text = "Database" }
                    };
 
         return navItems;
