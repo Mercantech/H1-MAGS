@@ -6,7 +6,123 @@ namespace Blazor.Services
     public partial class DBService
     {
 
+
+        public async Task AddEVDetailsToExistingCars()
+        {
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            // Først henter vi alle EV biler uden detaljer
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+            SELECT id, Name, Brand 
+            FROM Vehicles 
+            WHERE VehicleType = 'EV' 
+            AND id NOT IN (SELECT VehicleId FROM EVDetails)";
+
+            var carsWithoutDetails = new List<(string Id, string Name, string Brand)>();
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    carsWithoutDetails.Add((
+                        reader.GetString(0),  // id
+                        reader.GetString(1),  // name
+                        reader.GetString(2)   // brand
+                    ));
+                }
+            }
+
+            // Justerede værdier for at undgå overflow
+            var defaultSpecs = new Dictionary<string, (double BatteryCapacity, double Range, double ChargeTime, double FastCharge)>
+            {
+                ["Tesla"] = (75.0, 350.0, 8.0, 150.0),
+                ["Volkswagen"] = (82.0, 320.0, 7.5, 125.0),
+                ["Skoda"] = (82.0, 320.0, 7.5, 125.0),
+                ["Volvo"] = (75.0, 350.0, 8.0, 150.0)
+            };
+
+            // Default værdier også justeret
+            foreach (var car in carsWithoutDetails)
+            {
+                var specs = defaultSpecs.GetValueOrDefault(car.Brand, (70.0, 300.0, 7.0, 120.0));
+
+                await using var detailsCmd = connection.CreateCommand();
+                detailsCmd.CommandText = @"
+                    INSERT INTO EVDetails 
+                    (id, VehicleId, BatteryCapacity, Range, ChargeTime, FastCharge)
+                    VALUES 
+                    (@id, @vehicleId, @batteryCapacity, @range, @chargeTime, @fastCharge)";
+
+                detailsCmd.Parameters.AddWithValue("@id", Guid.NewGuid().ToString());
+                detailsCmd.Parameters.AddWithValue("@vehicleId", car.Id);
+                detailsCmd.Parameters.AddWithValue("@batteryCapacity", specs.Item1);
+                detailsCmd.Parameters.AddWithValue("@range", specs.Item2);
+                detailsCmd.Parameters.AddWithValue("@chargeTime", specs.Item3);
+                detailsCmd.Parameters.AddWithValue("@fastCharge", specs.Item4);
+
+                await detailsCmd.ExecuteNonQueryAsync();
+            }
+        }
+        public async Task AddPetrolDetailsToExistingCars()
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Først henter vi alle Petrol biler uden detaljer
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT id, Name, Brand 
+            FROM Vehicles 
+            WHERE VehicleType = 'Petrol' 
+            AND id NOT IN (SELECT VehicleId FROM PetrolDetails)";
+
+        var carsWithoutDetails = new List<(string Id, string Name, string Brand)>();
         
+        await using (var reader = await cmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                carsWithoutDetails.Add((
+                    reader.GetString(0),  // id
+                    reader.GetString(1),  // name
+                    reader.GetString(2)   // brand
+                ));
+            }
+        }
+
+        // Standard værdier baseret på mærke
+        var defaultSpecs = new Dictionary<string, (double EngineSize, int HorsePower, double Torque, double FuelEfficiency)>
+        {
+            ["BMW"] = (2.0, 184, 300.0, 15.5),
+            ["Audi"] = (2.0, 190, 320.0, 14.8),
+            ["Volvo"] = (2.0, 190, 320.0, 14.8),
+            ["Mercedes"] = (2.0, 195, 330.0, 15.0)
+        };
+
+        // Tilføj detaljer til hver bil
+        foreach (var car in carsWithoutDetails)
+        {
+            var specs = defaultSpecs.GetValueOrDefault(car.Brand, (2.0, 180, 300.0, 15.0));
+            
+            await using var detailsCmd = connection.CreateCommand();
+            detailsCmd.CommandText = @"
+                INSERT INTO PetrolDetails 
+                (id, VehicleId, EngineSize, HorsePower, Torque, FuelEfficiency, FuelType)
+                VALUES 
+                (@id, @vehicleId, @engineSize, @horsePower, @torque, @fuelEfficiency, 'Petrol')";
+
+            detailsCmd.Parameters.AddWithValue("@id", Guid.NewGuid().ToString());
+            detailsCmd.Parameters.AddWithValue("@vehicleId", car.Id);
+            detailsCmd.Parameters.AddWithValue("@engineSize", specs.Item1);    // EngineSize
+            detailsCmd.Parameters.AddWithValue("@horsePower", specs.Item2);    // HorsePower
+            detailsCmd.Parameters.AddWithValue("@torque", specs.Item3);        // Torque
+            detailsCmd.Parameters.AddWithValue("@fuelEfficiency", specs.Item4); // FuelEfficiency
+
+            await detailsCmd.ExecuteNonQueryAsync();
+        }
+    }
 
         public async Task InsertDummyData()
         {
@@ -184,4 +300,6 @@ namespace Blazor.Services
             }
         }
     }
+
+    
 }

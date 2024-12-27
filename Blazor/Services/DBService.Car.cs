@@ -7,15 +7,13 @@ namespace Blazor.Services
     {
         public async Task<List<PetrolCar>> GetAllPetrolCarsAsync()
         {
-            var sql = await ReadSqlFileAsync("SQL-Scripts/Get/PetrolCars.sql");
-            Console.WriteLine("SQL: " + sql);
             var cars = new List<PetrolCar>();
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = sql;
-            
+                command.CommandText = GetPetrolCars;
+                
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -25,18 +23,16 @@ namespace Blazor.Services
                     }
                 }
             }
-            Console.WriteLine("Cars: " + cars.Count);
             return cars;
         }
         public async Task<List<EVCar>> GetAllEVCarsAsync()
         {
-            var sql = await ReadSqlFileAsync("SQL-Scripts/Get/EVCars.sql");
             var cars = new List<EVCar>();
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = sql;
+                command.CommandText = GetEVCars;
                 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -44,7 +40,7 @@ namespace Blazor.Services
                     {
                         var car = new EVCar
                         {
-                            Id = reader.GetString(reader.GetOrdinal("VehicleId")),
+                            Id = reader.GetString(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             Description = reader.GetString(reader.GetOrdinal("Description")),
                             Price = (double)reader.GetDecimal(reader.GetOrdinal("Price")),
@@ -70,7 +66,6 @@ namespace Blazor.Services
                     }
                 }
             }
-            
             return cars;
         }
         public async Task<List<Car>> GetAllCarsAsync()
@@ -80,7 +75,59 @@ namespace Blazor.Services
             cars.AddRange(await GetAllEVCarsAsync());
             return cars;
         }
-    }
+
+
+        public static string GetPetrolCars => @"
+            SELECT 
+                v.id,
+                v.Name,
+                v.Description,
+                v.Price,
+                v.ImageUrl,
+                v.Brand,
+                v.Model,
+                v.Year,
+                v.Color,
+                v.Mileage,
+                p.EngineSize,
+                p.HorsePower,
+                p.Torque,
+                p.FuelEfficiency,
+                p.FuelType,
+                u.username as SellerUsername,
+                u.email as SellerEmail,
+                u.first_name as SellerFirstName,
+                u.last_name as SellerLastName
+            FROM Vehicles v
+            INNER JOIN PetrolDetails p ON v.id = p.VehicleId
+            INNER JOIN ""User"" u ON v.SellerId = u.id
+            WHERE v.VehicleType = 'Petrol'";
+
+        public static string GetEVCars => @"
+            SELECT 
+                v.id,
+                v.Name,
+                v.Description,
+                v.Price,
+                v.ImageUrl,
+                v.Brand,
+                v.Model,
+                v.Year,
+                v.Color,
+                v.Mileage,
+                ev.BatteryCapacity,
+                ev.Range,
+                ev.ChargeTime,
+                ev.FastCharge,
+                u.username as SellerUsername,
+                u.email as SellerEmail,
+                u.first_name as SellerFirstName,
+                u.last_name as SellerLastName
+            FROM Vehicles v
+            INNER JOIN EVDetails ev ON v.id = ev.VehicleId
+            INNER JOIN ""User"" u ON v.SellerId = u.id
+            WHERE v.VehicleType = 'EV'";
+        }
 
     
 }

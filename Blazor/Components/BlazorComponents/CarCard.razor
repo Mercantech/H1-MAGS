@@ -1,0 +1,84 @@
+﻿<div class="card h-100 shadow-sm">
+    @if (!string.IsNullOrEmpty(@Car.ImageUrl))
+    {
+        <img src="@Car.ImageUrl" class="card-img-top" alt="@Car.Name" style="height: 200px; object-fit: cover;">
+    }
+    <div class="card-body">
+        <h5 class="card-title">@Car.Brand @Car.Model @Car.Year</h5>
+        
+        @* Basis bil information *@
+        <p class="card-text text-muted">
+            <small>
+                <i class="bi bi-speedometer2"></i> @Car.Mileage km &bull;
+                <i class="bi bi-palette"></i> @Car.Color
+            </small>
+        </p>
+
+        @* Specifik information for PetrolCar *@
+        @if (Car is PetrolCar petrolCar)
+        {
+            <p class="card-text">
+                <small class="text-muted">
+                    <i class="bi bi-fuel-pump"></i> @petrolCar.FuelType &bull;
+                    <i class="bi bi-engine"></i> @petrolCar.EngineSize.ToString("F1")L &bull;
+                    <i class="bi bi-lightning"></i> @petrolCar.HorsePower hk &bull;
+                    <i class="bi bi-arrow-clockwise"></i> @petrolCar.Torque Nm &bull;
+                    <i class="bi bi-droplet"></i> @petrolCar.FuelEfficiency km/l
+                </small>
+            </p>
+        }
+
+        @* Specifik information for EVCar *@
+        @if (Car is EVCar evCar)
+        {
+            <p class="card-text">
+                <small class="text-muted">
+                    <i class="bi bi-battery-charging"></i> @evCar.BatteryCapacity kWh &bull;
+                    <i class="bi bi-sign-turn-right"></i> @evCar.Range km &bull;
+                    <i class="bi bi-clock"></i> @evCar.ChargeTime t &bull;
+                    <i class="bi bi-lightning-charge"></i> @evCar.FastCharge kW
+                </small>
+            </p>
+        }
+
+        <p class="card-text">@Car.Description</p>
+        
+        <div class="mt-3">
+            <h6 class="mb-2">Pris: @Car.Price.ToString("N0") kr.</h6>
+            
+            <button class="btn btn-outline-secondary w-100" 
+                    @onclick="ToggleSellerInfo" 
+                    type="button">
+                <i class="bi bi-person-circle me-2"></i>
+                @Car.Seller.FirstName
+                <i class="bi bi-chevron-@(showSellerInfo ? "up" : "down") ms-2"></i>
+            </button>
+
+            @if (showSellerInfo)
+            {
+                <div class="seller-info bg-light rounded p-3 border mt-2">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <strong>@Car.Seller.FirstName @Car.Seller.LastName</strong>
+                    </div>
+                    <div class="text-muted small">
+                        <div><i class="bi bi-person me-2"></i>@Car.Seller.Username</div>
+                        <div><i class="bi bi-envelope me-2"></i>@Car.Seller.Email</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Car Car { get; set; } = default!;
+
+    private bool showSellerInfo = false;
+
+    private void ToggleSellerInfo()
+    {
+        showSellerInfo = !showSellerInfo;
+    }
+}

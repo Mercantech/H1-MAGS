@@ -67,7 +67,7 @@ namespace Blazor.Services
                 VALUES (@id, @username, @email, @password_hash, @created_at, @updated_at, @last_login, @is_active, @first_name, @last_name)";
                 using var connection = new NpgsqlConnection(_connectionString);
                 using var command = new NpgsqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@id", Guid.NewGuid().ToString());
+                command.Parameters.AddWithValue("@id", user.Id ?? Guid.NewGuid().ToString());
                 command.Parameters.AddWithValue("@username", user.Username ?? string.Empty);
                 command.Parameters.AddWithValue("@email", user.Email ?? string.Empty);
                 command.Parameters.AddWithValue("@password_hash", user.PasswordHash ?? string.Empty);

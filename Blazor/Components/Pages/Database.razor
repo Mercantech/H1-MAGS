@@ -74,7 +74,7 @@
     {
         try
         {
-            await DbService.InsertDummyData();
+            await DbService.AddEVDetailsToExistingCars();
             await JS.InvokeVoidAsync("alert", "Dummy data er blevet indsat succesfuldt!");
         }
         catch (Exception ex)

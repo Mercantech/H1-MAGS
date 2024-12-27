@@ -24,16 +24,16 @@ namespace Domain_Models
                 Brand = baseCar.Brand,
                 Seller = baseCar.Seller,
                 Model = baseCar.Model,
-                Year = baseCar.Year ?? 2000,
-                Color = baseCar.Color ?? "red",
-                Mileage = baseCar.Mileage ?? 20,
+                Year = baseCar.Year,
+                Color = baseCar.Color,
+                Mileage = baseCar.Mileage,
                 
                 // Tilføj Petrol-specifikke properties
-                //EngineSize = (double)reader.GetDecimal(reader.GetOrdinal("EngineSize")),
-                //HorsePower = reader.GetInt32(reader.GetOrdinal("HorsePower")),
-                //Torque = (double)reader.GetDecimal(reader.GetOrdinal("Torque")),
-                //FuelEfficiency = (double)reader.GetDecimal(reader.GetOrdinal("FuelEfficiency")),
-                //FuelType = reader.GetString(reader.GetOrdinal("FuelType"))
+                EngineSize = (double)reader.GetDecimal(reader.GetOrdinal("EngineSize")),
+                HorsePower = reader.GetInt32(reader.GetOrdinal("HorsePower")),
+                Torque = (double)reader.GetDecimal(reader.GetOrdinal("Torque")),
+                FuelEfficiency = (double)reader.GetDecimal(reader.GetOrdinal("FuelEfficiency")),
+                FuelType = reader.GetString(reader.GetOrdinal("FuelType"))
             };
         }
     }

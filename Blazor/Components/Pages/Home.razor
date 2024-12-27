@@ -1,59 +1,37 @@
 ﻿@page "/"
-@using Blazor.Services
-@using Domain_Models
-@inject DBService DbService
-@inject IJSRuntime JS
 
 <PageTitle>Biler til salg</PageTitle>
 
 <div class="container mt-4">
-    <h1>Benzinbiler til salg</h1>
+    <h1>Biler til salg</h1>
     
-    @if (petrolCars == null)
+    @if (cars == null)
     {
         <p>Indlæser biler...</p>
     }
-    else if (!petrolCars.Any())
+    else if (!cars.Any())
     {
-        <p>Ingen benzinbiler fundet.</p>
+        <p>Ingen biler fundet.</p>
     }
     else
     {
         <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach (var car in petrolCars)
+            @foreach (var car in cars)
             {
-                <div class="col">
-                    <div class="card h-100">
-                        @if (!string.IsNullOrEmpty(car.ImageUrl))
-                        {
-                            <img src="@car.ImageUrl" class="card-img-top" alt="@car.Name">
-                        }
-                        <div class="card-body">
-                            <h5 class="card-title">@car.Brand @car.Name</h5>
-                            <p class="card-text">
-                                <strong>Pris:</strong> @car.Price.ToString("N0") kr.<br />
-                                <strong>Årgang:</strong> @car.Year<br />
-                                <strong>Kilometer:</strong> @car.Mileage.ToString() km
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <small class="text-muted">Sælger: @car.Seller.FirstName @car.Seller.LastName</small>
-                        </div>
-                    </div>
-                </div>
+                <CarCard Car="car" />
             }
         </div>
     }
 </div>
 
 @code {
-    private List<PetrolCar>? petrolCars;
+    private List<Car>? cars;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            petrolCars = await DbService.GetAllPetrolCarsAsync();
+            cars = await DBService.GetAllCarsAsync();
         }
         catch (Exception ex)
         {
