@@ -36,10 +36,12 @@
         navItems = new List<NavItem>
                    {
                        new NavItem { Href = "/", IconName = IconName.HouseDoorFill, Text = "Home" },
-                       new NavItem { Href = "/users", IconName = IconName.PeopleFill, Text = "Users" },
                        new NavItem { Href = "/counter", IconName = IconName.Calculator, Text = "Counter" },
                        new NavItem { Href = "/weather", IconName = IconName.CloudSunFill, Text = "Weather" },
-                       new NavItem { Href = "/database", IconName = IconName.Database, Text = "Database" }
+                       new NavItem { Id = "1", IconName = IconName.ExclamationTriangleFill, Text = "Admin" },
+                       new NavItem { Href = "Admin/users", IconName = IconName.PeopleFill, Text = "Users", ParentId = "1" },
+                       new NavItem { Id = "2", IconName = IconName.Database, Text = "Dev" },
+                       new NavItem { Href = "Dev/database", IconName = IconName.Database, Text = "Database", ParentId = "2" }
                    };
 
         return navItems;
