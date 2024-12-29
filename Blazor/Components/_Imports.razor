@@ -11,6 +11,8 @@
 @using Blazor.Services
 @using BlazorBootstrap;
 @using Domain_Models
-@using Blazor.Components.BlazorComponents
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Blazor.Components.Layout
 @inject DBService DBService
-@inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;

@@ -1,4 +1,6 @@
-﻿namespace Blazor.Services
+﻿using Npgsql;
+
+namespace Blazor.Services
 {
     public partial class DBService
     {
@@ -12,7 +14,7 @@
         {
             try
             {
-                using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+                using var connection = new NpgsqlConnection(_connectionString);
                 connection.Open();
                 return true;
             }
@@ -41,11 +43,11 @@
             try
             {
                 string sql = await ReadSqlFileAsync(filePath);
-                
-                using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+
+                using var connection = new NpgsqlConnection(_connectionString);
                 connection.Open();
-                
-                using var cmd = new Npgsql.NpgsqlCommand(sql, connection);
+
+                using var cmd = new NpgsqlCommand(sql, connection);
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -54,5 +56,7 @@
                 throw;
             }
         }
+
+
     }
 }

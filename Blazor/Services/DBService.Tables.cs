@@ -5,7 +5,7 @@ namespace Blazor.Services
         public List<string> GetAllTables()
         {
             List<string> tables = new List<string>();
-            
+
             try
             {
                 using var connection = new Npgsql.NpgsqlConnection(_connectionString);
@@ -45,7 +45,7 @@ namespace Blazor.Services
         public Dictionary<string, List<ColumnInfo>> GetDatabaseSchema()
         {
             var schema = new Dictionary<string, List<ColumnInfo>>();
-            
+
             try
             {
                 using var connection = new Npgsql.NpgsqlConnection(_connectionString);
@@ -171,4 +171,4 @@ namespace Blazor.Services
             return diagram.ToString();
         }
     }
-} 
+}

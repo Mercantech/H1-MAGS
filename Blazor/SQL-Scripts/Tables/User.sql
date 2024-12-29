@@ -66,3 +66,13 @@ ON CONFLICT (name) DO NOTHING;
 -- Tilføj kommentar
 COMMENT ON TABLE "Role" IS 'Tabel der indeholder system roller';
 
+-- Tilføj 3 standard brugere til test, en for hver rolle
+INSERT INTO "User" (id, username, email, password_hash, role_id) VALUES
+    (gen_random_uuid()::VARCHAR, 'user', 'user@example.com', '$2a$11$SWFH7jKD2CaKpGwEBsj4zuF81NcClZuZSs4enYrdnkD2kwAaMAAyC', 1), -- password: Cisco123!
+    (gen_random_uuid()::VARCHAR, 'admin', 'admin@example.com', '$2a$11$SWFH7jKD2CaKpGwEBsj4zuF81NcClZuZSs4enYrdnkD2kwAaMAAyC', 2), -- password: Cisco123!    
+    (gen_random_uuid()::VARCHAR, 'dev', 'dev@example.com', '$2a$11$SWFH7jKD2CaKpGwEBsj4zuF81NcClZuZSs4enYrdnkD2kwAaMAAyC', 3) -- password: Cisco123!
+ON CONFLICT (username) DO NOTHING;
+
+-- Tilføj kommentar
+COMMENT ON TABLE "User" IS 'Tabel der indeholder brugere';
+    

@@ -1,5 +1,7 @@
 using Blazor.Components;
 using Blazor.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Blazor;
 
@@ -20,20 +22,36 @@ public class Program
         if (!dbService.TestConnection())
         {
             Console.WriteLine("Kunne ikke oprette forbindelse til databasen");
-        } else {
+        }
+        else
+        {
             Console.WriteLine("Forbindelse til database oprettet succesfuldt");
         }
-        bool newDatabase = true;
-        if (newDatabase)
-        {
-            // Opsæt tabellerne
-            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/User.sql");
-            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/Categories.sql");
-            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/Vehicles.sql");
 
-            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/EVDetails.sql");
-            dbService.ExecuteSqlFileAsync("SQL-Scripts/Tables/PetrolDetails.sql");
-        }
+        // Tilføj JWTService
+        builder.Services.AddScoped<JWTService>();
+
+        builder.Services.AddScoped<ProtectedSessionStorage>();
+        builder.Services.AddAuthenticationCore();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = "Cookies";
+            options.DefaultChallengeScheme = "Cookies";
+        })
+        .AddCookie("Cookies");
+
+        builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
+        builder.Services.AddAuthorizationCore(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("DevOnly", policy => policy.RequireRole("Dev"));
+            options.AddPolicy("AdminOrDev", policy => policy.RequireRole("Admin", "Dev"));
+        });
+
+        // Opsæt tabellerne (Kun ved første kørsel)
+        dbService.ExecuteSqlFileAsync("SQL-Scripts/User.sql");
 
         builder.Services.AddBlazorBootstrap();
 
@@ -56,6 +74,9 @@ public class Program
         app.MapStaticAssets();
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.Run();
     }

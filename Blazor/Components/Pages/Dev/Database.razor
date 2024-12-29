@@ -1,7 +1,8 @@
 @page "/dev/database"
-
 @using Blazor.Services
 @inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize(Roles = "Dev")]
 
 <PageTitle>Database Schema</PageTitle>
 
@@ -74,8 +75,7 @@
     {
         try
         {
-            await DbService.AddEVDetailsToExistingCars();
-            await JS.InvokeVoidAsync("alert", "Dummy data er blevet indsat succesfuldt!");
+            await JS.InvokeVoidAsync("alert", "Denne metode er ikke implementeret endnu.");
         }
         catch (Exception ex)
         {

@@ -1,124 +1,142 @@
 @page "/admin/users"
 @using System.ComponentModel
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize(Roles = "Dev, Admin")]
 
-<h1>Brugere</h1>
 
-<div class="mb-3">
-    <button class="btn btn-primary me-2" @onclick="GetAllUsers">
-        <i class="fas fa-sync-alt"></i> Opdater Liste
-    </button>
-    <button class="btn btn-success" @onclick="CreateNewUser">
-        <i class="fas fa-user-plus"></i> Opret Ny Bruger
-    </button>
-</div>
+@inject IJSRuntime JSRuntime
 
-<Grid TItem="User"
-      Class="table table-hover table-bordered table-striped"
-      DataProvider="UsersDataProvider"
-      AllowFiltering="true"
-      Responsive="true">
-    <GridColumns>
-        <GridColumn TItem="User" HeaderText="Brugernavn" PropertyName="Username">
-            @context.Username
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Email" PropertyName="Email">
-            @context.Email
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Fornavn" PropertyName="FirstName">
-            @context.FirstName
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Efternavn" PropertyName="LastName">
-            @context.LastName
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Oprettet" PropertyName="CreatedAt">
-            @context.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Sidst Opdateret" PropertyName="UpdatedAt">
-            @context.UpdatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Sidst Logget Ind" PropertyName="LastLogin">
-            @(context.LastLogin?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "-")
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Status" PropertyName="IsActive">
-            <span class="badge @(context.IsActive ? "bg-success" : "bg-danger")">
-                @(context.IsActive ? "Aktiv" : "Inaktiv")
-            </span>
-        </GridColumn>
-        <GridColumn TItem="User" HeaderText="Handlinger">
-            <button class="btn btn-link" @onclick="() => EditUser(context)" title="Rediger">
-                <i class="fas fa-edit text-warning"></i>
+
+        <h1>Brugere Admin Board</h1>
+
+        <div class="mb-3">
+            <button class="btn btn-primary me-2" @onclick="GetAllUsers">
+                <i class="fas fa-sync-alt"></i> Opdater Liste
             </button>
-            <button class="btn btn-link" @onclick="() => DeleteUser(context.Id)" title="Slet">
-                <i class="fas fa-trash-alt text-danger"></i>
+            <button class="btn btn-success" @onclick="CreateNewUser">
+                <i class="fas fa-user-plus"></i> Opret Ny Bruger
             </button>
-        </GridColumn>
-    </GridColumns>
-</Grid>
+        </div>
 
-@if (editingUser != null)
-{
-    <div class="modal" tabindex="-1" style="display: block">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@(string.IsNullOrEmpty(editingUser.Id) ? "Opret Bruger" : "Rediger Bruger")</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="@editingUser" OnValidSubmit="SaveUser">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
+        <Grid TItem="User"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="UsersDataProvider"
+              AllowFiltering="true"
+              Responsive="true">
+            <GridColumns>
+                <GridColumn TItem="User" HeaderText="Brugernavn" PropertyName="Username">
+                    @context.Username
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Email" PropertyName="Email">
+                    @context.Email
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Fornavn" PropertyName="FirstName">
+                    @context.FirstName
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Efternavn" PropertyName="LastName">
+                    @context.LastName
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Sidst Logget Ind" PropertyName="LastLogin">
+                    @(context.LastLogin?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "-")
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Status" PropertyName="IsActive">
+                    <span class="badge @(context.IsActive ? "bg-success" : "bg-danger")">
+                        @(context.IsActive ? "Aktiv" : "Inaktiv")
+                    </span>
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Rolle" PropertyName="Role">
+                    @(context.GetRoleName())
+                </GridColumn>
+                <GridColumn TItem="User" HeaderText="Handlinger">
+                    <button class="btn btn-link" @onclick="() => EditUser(context)" title="Rediger">
+                        <i class="fas fa-edit text-warning"></i>
+                    </button>
+                    <button class="btn btn-link" @onclick="() => DeleteUser(context.Id)" title="Slet">
+                        <i class="fas fa-trash-alt text-danger"></i>
+                    </button>
+                </GridColumn>
+            </GridColumns>
+        </Grid>
 
-                        <div class="form-group mb-3">
-                            <label>Brugernavn</label>
-                            <InputText class="form-control" @bind-Value="editingUser.Username" />
-                            <ValidationMessage For="@(() => editingUser.Username)" />
+        @if (editingUser != null)
+        {
+            <div class="modal" tabindex="-1" style="display: block">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">@(string.IsNullOrEmpty(editingUser.Id) ? "Opret Bruger" : "Rediger Bruger")</h5>
+                            <button type="button" class="btn-close" @onclick="CloseModal"></button>
                         </div>
+                        <div class="modal-body">
+                            <EditForm Model="@editingUser" OnValidSubmit="SaveUser">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
 
-                        <div class="form-group mb-3">
-                            <label>Email</label>
-                            <InputText class="form-control" @bind-Value="editingUser.Email" type="email" />
-                            <ValidationMessage For="@(() => editingUser.Email)" />
-                        </div>
+                                <div class="form-group mb-3">
+                                    <label>Brugernavn</label>
+                                    <InputText class="form-control" @bind-Value="editingUser.Username" />
+                                    <ValidationMessage For="@(() => editingUser.Username)" />
+                                </div>
 
-                        <div class="form-group mb-3">
-                            <label>Fornavn</label>
-                            <InputText class="form-control" @bind-Value="editingUser.FirstName" />
-                            <ValidationMessage For="@(() => editingUser.FirstName)" />
-                        </div>
+                                <div class="form-group mb-3">
+                                    <label>Email</label>
+                                    <InputText class="form-control" @bind-Value="editingUser.Email" type="email" />
+                                    <ValidationMessage For="@(() => editingUser.Email)" />
+                                </div>
 
-                        <div class="form-group mb-3">
-                            <label>Efternavn</label>
-                            <InputText class="form-control" @bind-Value="editingUser.LastName" />
-                            <ValidationMessage For="@(() => editingUser.LastName)" />
-                        </div>
+                                <div class="form-group mb-3">
+                                    <label>Fornavn</label>
+                                    <InputText class="form-control" @bind-Value="editingUser.FirstName" />
+                                    <ValidationMessage For="@(() => editingUser.FirstName)" />
+                                </div>
 
-                        <div class="form-group mb-3">
-                            <label>
-                                <InputCheckbox @bind-Value="editingUser.IsActive" />
-                                Aktiv
-                            </label>
-                        </div>
+                                <div class="form-group mb-3">
+                                    <label>Efternavn</label>
+                                    <InputText class="form-control" @bind-Value="editingUser.LastName" />
+                                    <ValidationMessage For="@(() => editingUser.LastName)" />
+                                </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Annuller</button>
-                            <button type="submit" class="btn btn-primary">Gem</button>
+                                <div class="form-group mb-3">   
+                                    <label>Rolle</label>
+                                    <InputSelect class="form-control" @bind-Value="editingUser.RoleId">
+                                        @foreach (var role in Enum.GetValues<Role>())
+                                        {
+                                            <option value="@((int)role)">@role.ToString()</option>
+                                        }
+                                    </InputSelect>
+                                    <small class="form-text text-muted">
+                                        User: Almindelig bruger
+                                        Admin: Administrator med fuld adgang
+                                        Dev: Udvikler med udvidede rettigheder
+                                    </small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label>
+                                        <InputCheckbox @bind-Value="editingUser.IsActive" />
+                                        Aktiv
+                                    </label>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Annuller</button>
+                                    <button type="submit" class="btn btn-primary">Gem</button>
+                                </div>
+                            </EditForm>
                         </div>
-                    </EditForm>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="modal-backdrop fade show"></div>
-}
+            <div class="modal-backdrop fade show"></div>
+        }
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @errorMessage
-        <button type="button" class="btn-close" @onclick="() => errorMessage = null" aria-label="Close"></button>
-    </div>
-}
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @errorMessage
+                <button type="button" class="btn-close" @onclick="() => errorMessage = null" aria-label="Close"></button>
+            </div>
+        }
 
 @code {
     private List<User> users = new List<User>();
@@ -127,6 +145,12 @@
     private string? errorMessage;
     private string currentSortColumn = nameof(User.Username);
     private ListSortDirection currentSortDirection = ListSortDirection.Ascending;
+    private Dictionary<int, string> RoleDescriptions = new()
+    {
+        { 1, "Almindelig bruger" },
+        { 2, "Administrator med fuld adgang" },
+        { 3, "Udvikler med udvidede rettigheder" }
+    };
 
     private List<User> SortUsers(List<User> usersToSort)
     {
@@ -136,10 +160,9 @@
             nameof(User.Email) => SortList(usersToSort, u => u.Email),
             nameof(User.FirstName) => SortList(usersToSort, u => u.FirstName ?? string.Empty),
             nameof(User.LastName) => SortList(usersToSort, u => u.LastName ?? string.Empty),
-            nameof(User.CreatedAt) => SortList(usersToSort, u => u.CreatedAt),
-            nameof(User.UpdatedAt) => SortList(usersToSort, u => u.UpdatedAt),
             nameof(User.LastLogin) => SortList(usersToSort, u => u.LastLogin ?? DateTime.MinValue),
             nameof(User.IsActive) => SortList(usersToSort, u => u.IsActive),
+            nameof(User.RoleId) => SortList(usersToSort, u => u.RoleId),
             _ => usersToSort
         };
     }
@@ -198,7 +221,8 @@
             Email = string.Empty,
             FirstName = string.Empty,
             LastName = string.Empty,
-            PasswordHash = "Password123!",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Cisco123!"),
+            Role = Role.User,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             LastLogin = DateTime.UtcNow,
@@ -242,8 +266,9 @@
                     await DBService.PutUserAsync(editingUser);
                 }
                 
-                await GetAllUsers();
                 CloseModal();
+                await GetAllUsers();
+                await InvokeAsync(() => StateHasChanged());
             }
             catch (Npgsql.PostgresException ex)
             {
@@ -273,6 +298,7 @@
         {
             users = await DBService.GetAllUsersAsync();
             errorMessage = null; // Nulstil fejlbesked ved succesfuld hentning
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -284,15 +310,19 @@
 
     private async Task DeleteUser(string id)
     {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", "Er du sikker på, at du vil slette denne bruger?"))
+            return;
+
         try
         {
             await DBService.DeleteUserAsync(id);
             await GetAllUsers();
+            await InvokeAsync(() => StateHasChanged());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Fejl i DeleteUser: {ex.Message}");
-            errorMessage = $"Der opstod en fejl: {ex.Message}";
+            errorMessage = $"Der opstod en fejl ved sletning af brugeren: {ex.Message}";
         }
     }
 
@@ -303,10 +333,18 @@
 
     private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
     {
-        if (users.Count == 0)
+        if (!users.Any())
         {
             users = await DBService.GetAllUsersAsync();
+            StateHasChanged();
         }
         return await Task.FromResult(request.ApplyTo(users));
+    }
+
+    private string GetRoleDescription(int roleId)
+    {
+        return RoleDescriptions.TryGetValue(roleId, out var description) 
+            ? description 
+            : "Ukendt rolle";
     }
 }
