@@ -27,6 +27,27 @@
     <!-- Add sortable.js reference if SortableList component is used in your application. -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+    <script>
+        window.initMermaid = function () {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                er: {
+                    diagramPadding: 20,
+                    layoutDirection: 'TB',
+                    minEntityWidth: 100,
+                    minEntityHeight: 75,
+                    entityPadding: 15,
+                    stroke: 'gray',
+                    fill: 'white',
+                    fontSize: 12
+                }
+            });
+            mermaid.init(undefined, ".mermaid");
+        };
+    </script>
 </body>
 
 </html>

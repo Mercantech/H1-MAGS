@@ -11,5 +11,25 @@
         public bool IsActive { get; set; } = true;
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public int RoleId { get; set; } = 1;
+        public Role Role { get; set; } = Role.User;
+
+        public string GetRoleName()
+        {
+            return this.RoleId switch
+            {
+                1 => "User",
+                2 => "Admin",
+                3 => "Dev",
+                _ => "Ukendt"
+            };
+        }
+    }
+
+    public enum Role
+    {
+        User,
+        Admin,
+        Dev
     }
 }
